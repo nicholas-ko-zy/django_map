@@ -1,0 +1,54 @@
+<!doctype html>
+{% load static %}
+<html>
+  <head>
+    <meta charset='UTF-8' />
+    <title>Singapore Deck.gl + Leaflet</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+    <!-- Deck.gl -->
+    <script src="https://unpkg.com/deck.gl@8.8.0/dist.min.js"></script>
+    <style>
+      body { margin: 0; padding: 0; }
+      #map {
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+      // Singapore center point
+      const singaporeCenter = [1.3521, 103.8198];
+      const zoomLevel = 12;
+
+      // 1. Initialize Leaflet map
+      const map = L.map('map').setView(singaporeCenter, zoomLevel);
+      
+      // Add OSM base layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // 2. Initialize Deck.gl overlay
+      const deckOverlay = new deck.MapboxOverlay({
+        layers: [
+          new deck.ScatterplotLayer({
+            id: 'marina-bay-marker',
+            data: [{position: [103.8607, 1.2838], name: "Marina Bay Sands"}],
+            getPosition: d => d.position,
+            getRadius: 100,
+            getFillColor: [255, 0, 0],
+            pickable: true
+          })
+        ]
+      });
+      
+      // Add Deck.gl to Leaflet
+      map.addControl(deckOverlay);
+    </script>
+  </body>
+</html>
