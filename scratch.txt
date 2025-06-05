@@ -1,0 +1,16 @@
+Object { latlng: {…}, text: "", layer: null, type: "search:locationfound", target: {…}, sourceTarget: {…} }
+​
+latlng: Object { lat: 1.2829435, lng: 103.8441517 }
+​
+layer: null
+​
+sourceTarget: Object { _inputMinSize: 9, _autoTypeTmp: false, _countertips: 2, … }
+​
+target: Object { _inputMinSize: 9, _autoTypeTmp: false, _countertips: 2, … }
+​
+text: ""
+​
+type: "search:locationfound"
+​
+<prototype>: Object { … }
+search.js:30:15

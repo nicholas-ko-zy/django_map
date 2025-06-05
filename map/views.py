@@ -15,6 +15,10 @@ import pydeck as pdk
 from django.conf import settings
 import os
 import re
+import folium
+from .utils import make_markers_and_add_to_map
+import xyzservices.providers as xyz
+import folium.plugins as plugins
 
 
 # def home(request):
@@ -22,20 +26,45 @@ import re
 
 
 class HomeMapView(TemplateView):
-    # These are just parameters for ListView
-    # What model to use in each post
-    # What template to use
-    template_name = 'map/leaflet/index.html'
-    # Method to get context
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['mapbox_access_token'] = settings.MAPBOX_ACCESS_TOKEN
-    #     context['default_lat'] = 40.7128  # New York default coords
-    #     context['default_lng'] = -74.0060
-    #     return context
-    # Set order of posts to be most recent first
-    # ordering = ['-date_posted']
-    # paginate_by = 5
+    template_name = 'map/index.html'
+  
+    
+class MapView(TemplateView):
+    template_name = 'map/map.html'    
+
+    def get_context_data(self, **kwargs):
+        figure = folium.Figure()
+        
+
+        # Make the map
+        map = folium.Map(
+            location = [40.416, -3.70],
+            zoom_start = 11,
+            tiles = 'Stadia.StamenWatercolor')
+        
+        tile_provider = xyz.Stadia.StamenToner
+        tile_provider["url"] = tile_provider["url"] + "?api_key={api_key}"
+
+        plugins.Geocoder().add_to(map)
+        folium.TileLayer(
+            tiles=tile_provider.build_url(api_key='62a84e8e-27d0-4f67-a68b-132baef17d6f'),
+            attr=tile_provider.attribution,
+            name=tile_provider.name,
+            max_zoom=tile_provider.max_zoom,
+            detect_retina=True
+        ).add_to(map)
+
+        map.add_to(figure)
+        
+        # Add a click to markers
+        
+        # # Fetch the objects from database and make Markers for them
+        # for house in House.objects.all():
+        #     make_markers_and_add_to_map(map, house)
+      
+        # Render and send to template
+        figure.render()
+        return {"map": figure}
 
 class LondonMapView(TemplateView):
     # These are just parameters for ListView

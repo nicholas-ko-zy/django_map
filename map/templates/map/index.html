@@ -1,0 +1,35 @@
+{% load leaflet_tags %} {% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vehicle Routing Visualiser</title>
+    {% leaflet_css %} {% leaflet_js %}
+
+    <!-- Leaflet Search plugin -->
+    <link rel="stylesheet" href="{% static 'map/css/styles.css' %}">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css"
+    />
+    <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
+    <script src="https://unpkg.com/leaflet-geosearch@latest/dist/bundle.min.js"></script>
+
+  </head>
+  <body>
+    <!-- External JS -->
+    <script src="{% static 'map/js/map.js' %}" defer></script>
+    <script src="{% static 'map/js/search.js' %}" defer></script>
+    <div id="map"></div>
+    <div id="marker-list" class="marker-list">
+          
+      <table id="marker-table" style="width: 100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+          <tr><th>Location</th><th>Coordinates</th><th>Remove?</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    
+    
+  </body>
+</html>

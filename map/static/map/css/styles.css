@@ -1,0 +1,42 @@
+/* static/css/styles.css */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+  
+  #map {
+    height: 100%;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+  
+  #search-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: white;
+    padding: 10px;
+    z-index: 1000;
+    border-radius: 5px;
+  }
+  
+  #marker-list {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 320px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px;
+    border-radius: 6px;
+    z-index: 1001;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-family: sans-serif;
+    font-size: 14px;
+    max-height: 90vh;
+    overflow-y: auto;
+  
+  }
+  
+  
