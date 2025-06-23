@@ -3,4 +3,4 @@ A sandbox for me to learn how to create maps for a dynamic website. Currently wo
 
 ![](documentation/img/all_30_locations.png)
 
-
+![](documentation/img/osmnx_routing.jpg)
