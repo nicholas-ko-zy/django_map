@@ -29,7 +29,7 @@ class Preprocessor:
         orig = ox.distance.nearest_nodes(self.G, X=x1, Y=y1)
         dest = ox.distance.nearest_nodes(self.G, X=x2, Y=y2)
         n_cpus = 4
-        print(f'Solving shortest path with {n_cpus}...')
+        print(f'Solving shortest path with {n_cpus} CPUs...')
         route = ox.routing.shortest_path(self.G, orig, dest, weight="travel_time", cpus=n_cpus)
         return route
 
@@ -38,3 +38,5 @@ class Preprocessor:
         edge_lengths = ox.routing.route_to_gdf(self.G, route)["length"]
         distance = round(sum(edge_lengths))
         return distance
+    
+    
