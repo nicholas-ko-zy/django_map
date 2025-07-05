@@ -176,4 +176,4 @@ cython_debug/
 
 #pyc
 .pycnotebooks/geojson_3d_map.html
-.pkl
+*.pkl
