@@ -54,8 +54,17 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   searchControl.on('search:locationfound', function (e) {
+    console.log("Full event data:", e);  // Debug
+    // TODO: Need to fix the wrong marker name, now it's taking the first entry
+    // const name = Object.keys(e.target._recordsCache)[0];
     const latlng = e.latlng;
-    const name = Object.keys(e.target._recordsCache)[0];
+    const clickedLat = e.latlng.lat;
+    const clickedLng = e.latlng.lng;
+    let name = Object.keys(e.target._recordsCache).find(address => {
+      const record = e.target._recordsCache[address];
+      return record.lat === clickedLat && record.lng === clickedLng;
+    });
+    // 2. Extract name from different possible locations
     const marker = L.marker(latlng).addTo(markerLayer)
       .bindPopup(name).openPopup();
     

@@ -4,15 +4,11 @@ from debug_toolbar.toolbar import debug_toolbar_urls
 
 from .views import (
     HomeMapView,
-    hexagon_map,
-    LondonMapView,
-    MapView,
-    deckgl_view,
+    SolveRouteView,
 )
 
 urlpatterns = [
     # Empty path - Home page
     path('', HomeMapView.as_view(), name='map-home'),
-    path('medium', MapView.as_view(), name='medium-map'),
-    path('deck_gl_map', deckgl_view, name='deck-gl-demo'),
+    path('solve-route/', SolveRouteView.as_view(), name='solve-route')
     ]+ debug_toolbar_urls()

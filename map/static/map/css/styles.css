@@ -5,12 +5,20 @@ html, body {
     height: 100%;
   }
   
-  #map {
-    height: 100%;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-  }
+/* Ensure map container doesn't overlap */
+#map {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Button visibility insurance */
+#route-button {
+  display: block !important;
+  visibility: visible !important;
+}
   
   #search-container {
     position: absolute;
@@ -39,4 +47,7 @@ html, body {
   
   }
   
+  #route-button:hover {
+    background-color: #45a049;
+}
   
