@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  #map {
+    position: relative;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  
+  .sidebar {
+    height: 100%;
+    width: 0;
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+    right: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: 0.4s;
+    padding-top: 10px;
+    color: #fff;
+  }
+  
+/* Common button style */
+.sidebar .closebtn,
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  z-index: 1001;
+  position: absolute;
+}
+
+.openbtn {
+    font-size: 20px;
+    cursor: pointer;
+    background-color: #111;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    z-index: 1001;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  
+  .openbtn:hover {
+    background-color: #444;
+  }  
+
+  
+  #locationInfo {
+    /* first padding is horizontal distance, second is vert */
+    padding: 40px 20px;
+  }
+  
+  #locationInfo h3 {
+    margin-top: 0;
+  }
+  

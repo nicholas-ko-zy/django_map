@@ -2,6 +2,34 @@ document.addEventListener("DOMContentLoaded", function () {
   const { map, markerLayer } = window.appMap;
   const markers = []; // This array tracks all markers
   let lastQuery = '';
+  
+  const sidebar = document.getElementById("mySidebar");
+  const main = document.getElementById("main");
+  const toggleBtn = document.getElementById("sidebarToggle");
+  const toggleIcon = toggleBtn.querySelector("i");
+  
+  function openNav() {
+    sidebar.style.width = "400px";
+    main.style.marginRight = "400px";
+    toggleIcon.classList.remove("fa-caret-left");
+    toggleIcon.classList.add("fa-caret-right");
+  }
+  
+  function closeNav() {
+    sidebar.style.width = "0";
+    main.style.marginRight = "0";
+    toggleIcon.classList.remove("fa-caret-right");
+    toggleIcon.classList.add("fa-caret-left");
+  }
+  
+  toggleBtn.addEventListener("click", () => {
+    if (sidebar.style.width === "400px") {
+      closeNav();
+    } else {
+      openNav();
+    }
+  });
+  
 
   // Leaflet Search with Nominatim
   const searchControl = new L.Control.Search({
@@ -34,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Add header row
       const headerRow = table.insertRow();
-      headerRow.innerHTML = '<th>Location</th><th>Coordinates</th><th>Remove?</th>';
+      headerRow.innerHTML = '<th><Index></th><th>Location</th><th>Coordinates</th><th>Remove?</th>';
 
       // Add a row for each marker
       markers.forEach((marker, index) => {
@@ -42,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const latlng = marker.getLatLng();
           const row = table.insertRow();
           row.innerHTML = `
+              <td>${index + 1}</td>
               <td>${name}</td>
               <td>${latlng.lat.toFixed(5)}, ${latlng.lng.toFixed(5)}</td>
               <td><button onclick="removeMarker(${index})">Remove</button></td>

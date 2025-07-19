@@ -13,7 +13,7 @@ function initRouteButton() {
         transform: 'translateX(-50%)',
         zIndex: '1000',
         padding: '12px 24px',
-        backgroundColor: '#4CAF50',
+        backgroundColor: '#111111',
         color: 'white',
         border: 'none',
         borderRadius: '25px',

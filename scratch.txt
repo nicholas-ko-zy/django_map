@@ -1,16 +1,77 @@
-Object { latlng: {…}, text: "", layer: null, type: "search:locationfound", target: {…}, sourceTarget: {…} }
-​
-latlng: Object { lat: 1.2829435, lng: 103.8441517 }
-​
-layer: null
-​
-sourceTarget: Object { _inputMinSize: 9, _autoTypeTmp: false, _countertips: 2, … }
-​
-target: Object { _inputMinSize: 9, _autoTypeTmp: false, _countertips: 2, … }
-​
-text: ""
-​
-type: "search:locationfound"
-​
-<prototype>: Object { … }
-search.js:30:15
+def solve_vrp(self, distance_matrix, num_vehicles=3, depot=2, max_distance=10000):
+        """Solve Vehicle Routing Problem with distance constraints
+        
+        Args:
+            distance_matrix: 2D array of distances between locations
+            num_vehicles: Number of vehicles in the fleet
+            depot: Index of the depot/start location
+            max_distance: Maximum distance each vehicle can travel
+        
+        Returns:
+            List of routes (each route is a list of node indices)
+        """
+        # Create routing index manager
+        manager = pywrapcp.RoutingIndexManager(
+            len(distance_matrix), 
+            num_vehicles, 
+            depot
+        )
+        
+        # Create routing model
+        routing = pywrapcp.RoutingModel(manager)
+
+        # Define distance callback
+        def distance_callback(from_index, to_index):
+            """Returns the distance between the two nodes."""
+            from_node = manager.IndexToNode(from_index)
+            to_node = manager.IndexToNode(to_index)
+            return distance_matrix[from_node][to_node]
+
+        # Register distance callback
+        transit_callback_index = routing.RegisterTransitCallback(distance_callback)
+        
+        # Set arc cost evaluator
+        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+        
+        # Add Distance constraint
+        dimension_name = "Distance"
+        routing.AddDimension(
+            transit_callback_index,
+            0,  # no slack
+            max_distance,  # vehicle maximum travel distance
+            True,  # start cumul to zero
+            dimension_name
+        )
+        distance_dimension = routing.GetDimensionOrDie(dimension_name)
+        distance_dimension.SetGlobalSpanCostCoefficient(100)
+
+        # Setting first solution heuristic
+        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+        search_parameters.first_solution_strategy = (
+            routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+        )
+        search_parameters.local_search_metaheuristic = (
+            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
+        )
+        search_parameters.time_limit.seconds = 10  # Limit solve time
+        search_parameters.log_search = True  # Enable logging
+
+        # Solve the problem
+        solution = routing.SolveWithParameters(search_parameters)
+        
+        # Extract routes from solution
+        routes = []
+        if solution:
+            for vehicle_id in range(num_vehicles):
+                route = []
+                index = routing.Start(vehicle_id)
+                while not routing.IsEnd(index):
+                    node = manager.IndexToNode(index)
+                    route.append(node)
+                    index = solution.Value(routing.NextVar(index))
+                route.append(manager.IndexToNode(index))  # Add depot at end
+                routes.append(route)
+        else:
+            print("No solution found!")
+        
+        return routes

@@ -72,9 +72,15 @@ class SolveRouteView(View):
         url = f"http://router.project-osrm.org/table/v1/driving/{coords_str}"
         resp = requests.get(url, params={"annotations": "distance"})
         resp.raise_for_status()
-        return np.array(resp.json()['distances'])
+        print(f"\nResult of get_distance_matrix")
+        print(np.array(resp.json()['distances']))
+        # Change pairwise distance matrix entries to all type int
+        pairwise_dist_matrix = np.array(resp.json()['distances'])
+        pairwise_dist_matrix_int = pairwise_dist_matrix.astype(int)
+        print(f"Int pairwise dist matrix: {pairwise_dist_matrix_int}")
+        return pairwise_dist_matrix_int
 
-    def solve_vrp(self, distance_matrix, num_vehicles=2, depot=0, max_distance=10):
+    def solve_vrp(self, distance_matrix, num_vehicles=4, depot=0, max_distance=1000):
         """Solve Vehicle Routing Problem with distance constraints
         
         Args:
@@ -114,8 +120,8 @@ class SolveRouteView(View):
         routing.AddDimension(
             transit_callback_index,
             0,  # no slack
-            max_distance,  # vehicle maximum travel distance
-            True,  # start cumul to zero
+            200000,  # vehicle maximum travel distance
+            True,  # start to zero
             dimension_name
         )
         distance_dimension = routing.GetDimensionOrDie(dimension_name)
@@ -126,11 +132,9 @@ class SolveRouteView(View):
         search_parameters.first_solution_strategy = (
             routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
         )
-        search_parameters.local_search_metaheuristic = (
-            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
-        )
+
         search_parameters.time_limit.seconds = 10  # Limit solve time
-        search_parameters.log_search = True  # Enable logging
+        search_parameters.log_search = False  # Enable logging?
 
         # Solve the problem
         solution = routing.SolveWithParameters(search_parameters)
@@ -138,18 +142,25 @@ class SolveRouteView(View):
         # Extract routes from solution
         routes = []
         if solution:
-            for vehicle_id in range(num_vehicles):
-                route = []
-                index = routing.Start(vehicle_id)
+            # for vehicle_id in range(num_vehicles):
+            #     route = []
+            #     index = routing.Start(vehicle_id)
+            #     while not routing.IsEnd(index):
+            #         node = manager.IndexToNode(index)
+            #         route.append(node)
+            #         index = solution.Value(routing.NextVar(index))
+            #     route.append(manager.IndexToNode(index))  # Add depot at end
+            #     routes.append(route)
+            for route_nbr in range(routing.vehicles()):
+                index = routing.Start(route_nbr)
+                route = [manager.IndexToNode(index)]
                 while not routing.IsEnd(index):
-                    node = manager.IndexToNode(index)
-                    route.append(node)
                     index = solution.Value(routing.NextVar(index))
-                route.append(manager.IndexToNode(index))  # Add depot at end
+                    route.append(manager.IndexToNode(index))
                 routes.append(route)
         else:
             print("No solution found!")
-        
+            print(routes)
         return routes
 
     def get_vehicle_paths(self, locations, vehicle_routes):
@@ -157,7 +168,8 @@ class SolveRouteView(View):
         vehicle_paths = []
         
         for route in vehicle_routes:
-            if len(route) < 2:  # Skip empty routes
+            if len(route) < 2:
+                # Skip empty routes
                 continue
                 
             waypoints = [locations[i] for i in route]
@@ -167,15 +179,15 @@ class SolveRouteView(View):
                 f"http://router.project-osrm.org/route/v1/driving/{coords_str}",
                 params={"overview": "full", "geometries": "geojson"}
             )
-            data = resp.json()
             
+            data = resp.json()
+            # Deal with case where there is no route between points
             vehicle_paths.append({
                 "geometry": data['routes'][0]['geometry'],
                 "distance": data['routes'][0]['distance'],
                 "duration": data['routes'][0]['duration'],
                 "waypoints": waypoints
             })
-            # print(vehicle_paths[0]['geometry']['coordinates'])
         return vehicle_paths
 
     def build_response(self, vehicle_paths):

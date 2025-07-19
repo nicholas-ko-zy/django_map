@@ -18,6 +18,7 @@ html, body {
 #route-button {
   display: block !important;
   visibility: visible !important;
+  background: black;
 }
   
   #search-container {
@@ -48,6 +49,21 @@ html, body {
   }
   
   #route-button:hover {
-    background-color: #45a049;
+    background-color: #111;
 }
-  
+
+#marker-table {
+  table-layout: auto;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+  color: white;
+}
+
+#marker-table th,
+#marker-table td {
+  border-right: 1px solid #555; /* light grey line */
+  border-left: 1px solid #555; 
+  padding: 10px;
+  text-align: left;
+}
