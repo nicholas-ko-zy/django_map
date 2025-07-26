@@ -177,3 +177,6 @@ cython_debug/
 #pyc
 .pycnotebooks/geojson_3d_map.html
 *.pkl
+
+#constants file
+map/static/map/js/constants.js
