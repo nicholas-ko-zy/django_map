@@ -142,15 +142,6 @@ class SolveRouteView(View):
         # Extract routes from solution
         routes = []
         if solution:
-            # for vehicle_id in range(num_vehicles):
-            #     route = []
-            #     index = routing.Start(vehicle_id)
-            #     while not routing.IsEnd(index):
-            #         node = manager.IndexToNode(index)
-            #         route.append(node)
-            #         index = solution.Value(routing.NextVar(index))
-            #     route.append(manager.IndexToNode(index))  # Add depot at end
-            #     routes.append(route)
             for route_nbr in range(routing.vehicles()):
                 index = routing.Start(route_nbr)
                 route = [manager.IndexToNode(index)]
@@ -177,11 +168,11 @@ class SolveRouteView(View):
             
             resp = requests.get(
                 f"http://router.project-osrm.org/route/v1/driving/{coords_str}",
-                params={"overview": "full", "geometries": "geojson"}
+                params={"overview": "full", "geometries": "geojson", "continue_straight": "false"}
             )
-            
+        
             data = resp.json()
-            # Deal with case where there is no route between points
+            # TODO: Deal with case where there is no route between points
             vehicle_paths.append({
                 "geometry": data['routes'][0]['geometry'],
                 "distance": data['routes'][0]['distance'],
@@ -189,7 +180,7 @@ class SolveRouteView(View):
                 "waypoints": waypoints
             })
         return vehicle_paths
-
+    
     def build_response(self, vehicle_paths):
         """Structure the API response"""
         return JsonResponse({
