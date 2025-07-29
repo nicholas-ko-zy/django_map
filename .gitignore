@@ -180,3 +180,6 @@ cython_debug/
 
 #constants file
 map/static/map/js/constants.js
+
+#List of pairwise distances from osmnx
+data/distances_list.pkl
