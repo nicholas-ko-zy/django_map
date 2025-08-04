@@ -19,7 +19,7 @@ Mathematically, we are given the following:
 | $O$      | Depot                                                                                                                                                           |
 | $N$      | A customer set, where $N = \{1,2,...n\}$ and $\mid N\mid$ = n                                                                                                   |
 |$S$|The customer subset, $S \subseteq N$|
-| $q_i$    | The demand to the $i$th customer, which we assume to be 1 in our simulation. If varied, then we are exploring the capacitated vehicle routing problem (CVRP) |
+| $q_i$    | The demand to the $i\text{th}$ customer, which we assume to be 1 in our simulation. If varied, then we are exploring the capacitated vehicle routing problem (CVRP) |
 |$c_{ij}$|The cost of moving from location $i$ to location $j$|
 |$K$ |The fleet of vehicles, $K = \{1,2, ...,\mid k\mid\}$|
 
