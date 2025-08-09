@@ -2,7 +2,11 @@
 
 This repo contains the current work-in-progress code for my Django web application that visualises the vehicle routing problem (VRP). 
 
-A demo gif (Jul 2025):
+New Feature: Upload CSV to instantly add locations to map. (20250809 Happy National Day):
+
+![](img/demo_Feature_UploadCSV.gif)
+
+A demo gif version 1 (Jul 2025):
 
 ![](img/v1_demo.gif)
 
