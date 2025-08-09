@@ -8,7 +8,7 @@ New Feature: Upload CSV to instantly add locations to map. (20250809 Happy Natio
 
 A demo gif version 1 (Jul 2025):
 
-![](img/v1_demo.gif)
+![](img/demo_v1.gif)
 
 Here is the problem description of the VRP, which  I took from [Vehicle Routing: Problems, Methods, and Applications (Second Edition) by Paolo Toth and Daniele Vigo.](https://epubs.siam.org/doi/book/10.1137/1.9781611973594)
 
