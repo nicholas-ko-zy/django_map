@@ -1,4 +1,4 @@
-id,location_name,location_type,lat,lon
+id,name,location_type,lat,lon
 school_1,Admiralty Primary School,school,1.44294,103.80035
 school_2,Jurong West Primary School,school,1.33931,103.69903
 school_3,River Valley Primary School,school,1.2943,103.83593

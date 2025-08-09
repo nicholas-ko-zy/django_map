@@ -1,0 +1,43 @@
+/* route-summary.css */
+
+#route-summary {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #eee;
+  }
+  
+  #route-summary::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  #route-summary::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+  }
+  
+  .route-summary-route {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    border: 2px solid;
+    border-radius: 12px;
+    padding: 8px 12px;
+    background-color: #f9f9f9;
+    font-size: 14px;
+    white-space: nowrap;
+    user-select: none;
+  }
+  
+  .route-color-box {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    box-shadow: 0 0 4px rgba(0,0,0,0.15);
+  }
+  

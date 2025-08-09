@@ -5,30 +5,62 @@
     <title>Vehicle Routing Visualiser</title>
     {% leaflet_css %} {% leaflet_js %}
     <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
 
     <!-- Leaflet Search plugin -->
     <link rel="stylesheet" href="{% static 'map/css/styles.css' %}">
     <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css"
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-search/dist/leaflet-search.min.css"
     />
-    <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js"></script>
     <link rel="stylesheet" href="{% static 'map/css/sidebar.css' %}">
 
+    <!-- Dropzone CSS -->
+    <link rel="stylesheet" href="{% static 'map/css/dropzone-custom.css' %}">
+
+    <!-- Route summary CSS -->
+    {% comment %} <link rel="stylesheet" href="{% static 'map/css/route-summary.css' %}"> {% endcomment %}
+
+    <style>
+      /* Dropzone box in bottom-right, under popups */
+      #file-uploader {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        width: 250px;
+        height: 150px;
+        background: white;
+        border: 2px dashed #ccc;
+        z-index: 500; /* lower than Leaflet popup (~600) */
+      }
+
+      /* Example positioning of route summary container */
+      #route-summary {
+        position: fixed;
+        bottom: 70px; /* above route button */
+        left: 10px;
+        right: 10px;
+        height: 140px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px;
+        font-family: sans-serif;
+        font-size: 14px;
+        z-index: 800;
+      }
+    </style>
   </head>
   <body>
-    <!-- External JS -->
-    <script type="module" src="{% static 'map/js/map.js' %}" defer></script>
-    <script src="{% static 'map/js/search.js' %}" defer></script>
-    
     <div id="map"></div>
+
     <div id="mySidebar" class="sidebar">
       <div id="locationInfo">
         <h3>Locations</h3>
-    
         <table id="marker-table" style="width: 100%; border-collapse: collapse; font-size: 13px; color: white;">
           <thead>
             <tr>
@@ -40,17 +72,36 @@
           </thead>
           <tbody></tbody>
         </table>
-        
       </div>
     </div>
-    
+
+    <!-- Route summary container -->
+    {% comment %} <div id="route-summary"></div> {% endcomment %}
+
     <button id="sidebarToggle" class="openbtn">
       <i class="fa fa-caret-left"></i>
     </button>
+
+    <!-- Scripts -->
+    <script>
+      window.Dropzone = window.Dropzone || {};
+      window.Dropzone.autoDiscover = false;
+    </script>
+    <script src="https://unpkg.com/leaflet-search/dist/leaflet-search.min.js" defer></script>
+    <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js" defer></script>
+
+    <!-- Dropzone upload box -->
+    <div id="file-uploader">
+      Upload locations CSV file here!<br>
+      It must contain 'name', 'lat' and 'lon' columns.
+    </div>
     
-    <script src="{% static 'map/js/route.js' %}" defer></script>
-    
-    
-    
+    <!-- Your modules as ES modules -->
+    <script type="module" src="{% static 'map/js/marker-manager.js' %}" defer></script>
+    <script type="module" src="{% static 'map/js/search.js' %}" defer></script>
+    <script type="module" src="{% static 'map/js/csv-upload-marker.js' %}" defer></script>
+    <script type="module" src="{% static 'map/js/route.js' %}" defer></script>
+    {% comment %} <script type="module" src="{% static 'map/js/route-summary.js' %}" defer></script> {% endcomment %}
+    <script type="module" src="{% static 'map/js/map.js' %}" defer></script>
   </body>
 </html>

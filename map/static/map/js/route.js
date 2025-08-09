@@ -1,3 +1,5 @@
+import { renderRouteSummary, clearRouteSummary } from './route-summary.js';
+
 // Wait for full initialization
 function initRouteButton() {
     // Create button
@@ -49,7 +51,7 @@ function initRouteButton() {
             // Prepare coordinates
             const coordinates = markers.map(marker => {
                 const latlng = marker.getLatLng();
-                return [latlng.lat, latlng.lng]; // Note: Changed to [lon,lat] to match expected format
+                return [latlng.lat, latlng.lng]; 
             });
             
             // AJAX call to Django backend
@@ -68,19 +70,40 @@ function initRouteButton() {
 
             const result = await response.json();
 
-            // Clear existing routes if any
+            // Clear existing routes on map and summary
             if (window.currentRoutes) {
                 window.currentRoutes.forEach(route => {
                     window.appMap.map.removeLayer(route);
                 });
             }
+            clearRouteSummary();
 
-            // Process each vehicle route
+            // Draw routes on map and prepare route indices for summary
             window.currentRoutes = [];
-            const colors = ['#3388ff', '#ff5733', '#33ff57', '#f033ff']; // Different colors for each route
+            const colors = ['#3388ff', '#ff5733', '#33ff57', '#f033ff']; 
             
+            // Extract route indices for summary
+            const vehicleRoutesIndices = result.vehicles.map(vehicle => vehicle.route_indices);
+
+            // Prepare marker data for summary display
+            const markersData = markers.map(marker => {
+                const latlng = marker.getLatLng();
+                // Try to get a name from popup or fallback to 'Location N'
+                const popupContent = marker.getPopup()?.getContent();
+                return {
+                    name: popupContent ? popupContent : `Location (${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)})`,
+                    lat: latlng.lat,
+                    lon: latlng.lng,
+                };
+            });
+            
+            if (markersData.length === 0) {
+                console.log('No marker data available.');
+              } else {
+                console.log(`Markers data has ${markersData.length} entries.`);
+              }
+
             result.vehicles.forEach((vehicle, index) => {
-                // Convert path to GeoJSON LineString format
                 const routeGeoJSON = {
                     type: 'Feature',
                     geometry: {
@@ -93,7 +116,6 @@ function initRouteButton() {
                     }
                 };
 
-                // Draw route with unique color
                 const routeLayer = L.geoJSON(routeGeoJSON, {
                     style: { 
                         color: colors[index % colors.length],
@@ -102,7 +124,6 @@ function initRouteButton() {
                     }
                 }).addTo(window.appMap.map);
 
-                // Add popup with route info
                 routeLayer.bindPopup(`
                     <b>Route ${index + 1}</b><br>
                     Distance: ${vehicle.summary.distance_km.toFixed(1)} km<br>
@@ -112,14 +133,14 @@ function initRouteButton() {
                 window.currentRoutes.push(routeLayer);
             });
 
-            // Zoom to show all routes if there are any
+            // Zoom map to fit all routes
             if (window.currentRoutes.length > 0) {
-                const bounds = window.currentRoutes.reduce((acc, route) => {
-                    return acc.extend(route.getBounds());
-                }, window.currentRoutes[0].getBounds());
-                
+                const bounds = window.currentRoutes.reduce((acc, route) => acc.extend(route.getBounds()), window.currentRoutes[0].getBounds());
                 window.appMap.map.fitBounds(bounds);
             }
+
+            // Render the textual route summary panel
+            renderRouteSummary(vehicleRoutesIndices, markersData);
 
         } catch (error) {
             console.error('Routing error:', error);

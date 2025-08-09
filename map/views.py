@@ -20,17 +20,45 @@ import folium
 from .utils import make_markers_and_add_to_map
 import xyzservices.providers as xyz
 import folium.plugins as plugins
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseBadRequest
 import requests
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 import json
 import numpy as np
-
+import csv
 
 class HomeMapView(TemplateView):
     template_name = 'map/index.html'
   
+class CsvUploadView(View):
+    def post(self, request, *args, **kwargs):
+        # Check if a file is uploaded
+        csv_file = request.FILES.get('file')
+        if not csv_file:
+            return HttpResponseBadRequest("No file uploaded")
+
+        # Read and decode CSV file
+        try:
+            data = csv_file.read().decode('utf-8')
+            io_string = io.StringIO(data)
+            reader = csv.DictReader(io_string)
+        except Exception as e:
+            return HttpResponseBadRequest(f"Error reading CSV file: {e}")
+
+        locations = []
+        # Expected CSV columns: name, lat, lon
+        for row in reader:
+            try:
+                name = row['name']
+                lat = float(row['lat'])
+                lon = float(row['lon'])
+                locations.append({"name": name, "lat": lat, "lon": lon})
+            except (KeyError, ValueError):
+                # Skip rows with missing or invalid data
+                continue
+
+        return JsonResponse({"locations": locations})
 
 class SolveRouteView(View):
     """
@@ -51,9 +79,8 @@ class SolveRouteView(View):
             print(f'Vehicle routes: {vehicle_routes}')
             
             vehicle_paths = self.get_vehicle_paths(locations, vehicle_routes)
-            # print(f"Vehicle paths: {vehicle_paths}")
-            # 3. Prepare response
-            return self.build_response(vehicle_paths)
+            # 3. Prepare response with routes included
+            return self.build_response(vehicle_paths, vehicle_routes)
             
         except json.JSONDecodeError:
             return JsonResponse(
@@ -72,12 +99,9 @@ class SolveRouteView(View):
         url = f"http://router.project-osrm.org/table/v1/driving/{coords_str}"
         resp = requests.get(url, params={"annotations": "distance"})
         resp.raise_for_status()
-        print(f"\nResult of get_distance_matrix")
-        print(np.array(resp.json()['distances']))
         # Change pairwise distance matrix entries to all type int
         pairwise_dist_matrix = np.array(resp.json()['distances'])
         pairwise_dist_matrix_int = pairwise_dist_matrix.astype(int)
-        print(f"Int pairwise dist matrix: {pairwise_dist_matrix_int}")
         return pairwise_dist_matrix_int
 
     def solve_vrp(self, distance_matrix, num_vehicles=4, depot=0, max_distance=1000):
@@ -151,7 +175,6 @@ class SolveRouteView(View):
                 routes.append(route)
         else:
             print("No solution found!")
-            print(routes)
         return routes
 
     def get_vehicle_paths(self, locations, vehicle_routes):
@@ -181,19 +204,23 @@ class SolveRouteView(View):
             })
         return vehicle_paths
     
-    def build_response(self, vehicle_paths):
-        """Structure the API response"""
+    def build_response(self, vehicle_paths, vehicle_routes):
+        """Structure the API response with route indices included"""
         return JsonResponse({
             "status": "success",
             "vehicles": [
                 {
                     "path": path['geometry']['coordinates'],
                     "summary": {
-                        "distance_km": round(path['distance']/1000, 2),
-                        "duration_min": round(path['duration']/60, 1),
-                        "waypoints": path['waypoints']
-                    }
-                } for path in vehicle_paths
+                        "distance_km": round(path['distance'] / 1000, 2),
+                        "duration_min": round(path['duration'] / 60, 1),
+                        # Optionally include waypoints here if needed:
+                        # "waypoints": path['waypoints'],
+                    },
+                    "route_indices": vehicle_routes[i]  # Add the visiting order indices here
+                }
+                for i, path in enumerate(vehicle_paths)
             ]
         })
+
 
