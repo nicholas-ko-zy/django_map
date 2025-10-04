@@ -1,6 +1,12 @@
 # Visualising the Vehicle Routing Problem (VRP)
 
-This repo contains the current work-in-progress code for my Django web application that visualises the vehicle routing problem (VRP). 
+This repo contains the current work-in-progress code for my Django web application that visualises the vehicle routing problem (VRP). This project is built on the follow open-source resources.
+
+1. Django 
+2. Leaflet
+3. Open Source Routing Machine (OSRM)
+4. Google OR-Tools
+5. Nominatim (for Geocoding)
 
 New Feature: Upload CSV to instantly add locations to map. (20250809 Happy National Day):
 
